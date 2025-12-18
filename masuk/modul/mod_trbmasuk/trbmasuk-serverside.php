@@ -15,7 +15,7 @@ if ($_GET['action'] == "table_data") {
         8 => 'id_trbmasuk'
     );
 
-    $querycount = $db->query("SELECT count(id_trbmasuk) as jumlah FROM trbmasuk WHERE id_resto = 'pusat' AND jenis = 'nonpbf'");
+    $querycount = $db->query("SELECT count(id_trbmasuk) as jumlah FROM trbmasuk WHERE id_resto = 'pusat' and jenis = 'nonpbf' ");
     $datacount = $querycount->fetch_array();
 
     $totalData = $datacount['jumlah'];
@@ -30,13 +30,13 @@ if ($_GET['action'] == "table_data") {
     if (empty($_POST['search']['value'])) {
         $query = $db->query("SELECT *
             FROM trbmasuk
-            WHERE trbmasuk.id_resto = 'pusat' AND trbmasuk.jenis = 'nonpbf'
+            WHERE trbmasuk.id_resto = 'pusat' and jenis = 'nonpbf'
             ORDER BY $order DESC LIMIT $limit OFFSET $start");
     } else {
         $search = $_POST['search']['value'];
         $query = $db->query("SELECT * 
             FROM trbmasuk
-            WHERE trbmasuk.id_resto = 'pusat' AND trbmasuk.jenis = 'nonpbf'
+            WHERE trbmasuk.id_resto = 'pusat' and jenis = 'nonpbf'
                         AND kd_trbmasuk LIKE '%$search%'
                         OR petugas LIKE '%$search%'
                         OR tgl_trbmasuk LIKE '%$search%'
@@ -48,7 +48,7 @@ if ($_GET['action'] == "table_data") {
 
         $querycount = $db->query("SELECT count(id_trbmasuk) as jumlah 
             FROM trbmasuk
-            WHERE trbmasuk.id_resto = 'pusat' AND trbmasuk.jenis = 'nonpbf'
+            WHERE trbmasuk.id_resto = 'pusat' and jenis = 'nonpbf'
                         AND trbmasuk.kd_trbmasuk LIKE '%$search%'
                         OR trbmasuk.petugas LIKE '%$search%'
                         OR trbmasuk.tgl_trbmasuk LIKE '%$search%'

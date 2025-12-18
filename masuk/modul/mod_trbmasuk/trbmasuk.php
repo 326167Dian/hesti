@@ -13,14 +13,14 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 
 
 			$tampil_trbmasuk = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk 
-	  WHERE id_resto = 'pusat' and jenis = 'nonpbf'
+	  WHERE id_resto = 'pusat'
 	  ORDER BY trbmasuk.id_trbmasuk DESC");
 
 
 ?>
 			<div class="box box-primary box-solid">
 				<div class="box-header with-border">
-					<h3 class="box-title">TRANSAKSI BARANG MASUK (SUDAH TERMASUK PAJAK)</h3>
+					<h3 class="box-title">TRANSAKSI BARANG MASUK</h3>
 					<div class="box-tools pull-right">
 						<button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
 					</div><!-- /.box-tools -->
@@ -169,7 +169,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 			if ($ketemucekkd > 0) {
 				$kdtransaksi = $hcekkd['kd_trbmasuk'];
 			} else {
-				$kdunik = date('dmyHis');
+				$kdunik = date('dmyhis');
 				$kdtransaksi = "BMP-" . $kdunik;
 				mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO kdbm(kd_trbmasuk,id_resto,id_admin) VALUES('$kdtransaksi','pusat','$_SESSION[idadmin]')");
 			}
@@ -271,15 +271,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									
 									<label class='col-sm-4 control-label'>Nama Barang</label>        		
 										<div class='col-sm-7'>
-											<div class='btn-group btn-group-justified' role='group' aria-label='...'>
-                                                <div class='btn-group' role='group'>
-											        <input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
-                                                    
-                                                </div>
-                                                <div class='btn-group' role='group'>
-                                                    <button type='button' class='btn btn-primary' id='nmbrg_dtrbmasuk_enter'>Enter</button>
-                                                </div>
-                                            </div>
+											<input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
 										</div>
 										
 									<label class='col-sm-4 control-label'>Qty</label>        		
@@ -289,7 +281,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 										
 									<label class='col-sm-4 control-label'>Satuan</label>        		
 										<div class='col-sm-7'>
-											<input type=text name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' autocomplete='off' disabled>
+											<input type=text name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' autocomplete='off'>
 										</div>
 
 									<label class='col-sm-4 control-label'>Harga Beli</label>        		
@@ -311,7 +303,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									
 									<label class='col-sm-4 control-label'>Exp. Date</label>        		
 										<div class='col-sm-7'>
-											<input type='date' class='datepicker' name='exp_date' id='exp_date' required='required' autocomplete='off'>
+											<input type='text' class='datepicker' name='exp_date' id='exp_date' required='required' autocomplete='off'>
 											</p>
 												<div class='buttons'>
 													<button type='button' class='btn btn-success right-block' onclick='simpan_detail();'>SIMPAN DETAIL</button>
@@ -445,15 +437,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									
 									<label class='col-sm-4 control-label'>Nama Barang</label>        		
 										<div class='col-sm-7'>
-											<div class='btn-group btn-group-justified' role='group' aria-label='...'>
-                                                <div class='btn-group' role='group'>
-											        <input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
-                                                    
-                                                </div>
-                                                <div class='btn-group' role='group'>
-                                                    <button type='button' class='btn btn-primary' id='nmbrg_dtrbmasuk_enter'>Enter</button>
-                                                </div>
-                                            </div>
+											<input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
 										</div>
 										
 									<label class='col-sm-4 control-label'>Qty</label>        		
@@ -488,7 +472,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									  
 				</div>";
 		?>
-			<div class='box-body table-responsive'>
+			<div>
 				<table id="example1" class="table table-condensed table-bordered table-striped table-hover table-responsive">
 					<thead>
 						<th>No</th>
@@ -516,8 +500,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
                                             <td>$q[sat_dtrbmasuk]</td>
                                             <td>$q[no_batch]</td>
                                             <td>".tgl_indo($q['exp_date'])."</td>
-                                            <td align='right'>".format_rupiah($q['hrgsat_dtrbmasuk'])."</td>
-                                            <td align='right'>".format_rupiah($q['hrgttl_dtrbmasuk'])."</td>
+                                            <td align='right'>$q[hrgsat_dtrbmasuk]</td>
+                                            <td align='right'>$q[hrgttl_dtrbmasuk]</td>
                                          </tr>";
 
 							$no++;
@@ -542,10 +526,11 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 
 				</table>
 			</div>
-		</div>
+			</div>
 <?php
 			break;
-		
+			
+					
 		case "cari":
 	
 
@@ -661,6 +646,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 	}
 }        
 ?>
+
+
 
 <!-- Modal itemmat -->
 <div id="ModalItem" class="modal fade" role="dialog">
@@ -852,36 +839,6 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 		})
 	});
 
-    $('#nmbrg_dtrbmasuk_enter').on('click', function(){
-	    let nm_barang = $('#nmbrg_dtrbmasuk').val();
-		$.ajax({
-			url: 'modul/mod_trbmasuk/autonamabarang_enter.php',
-			type: 'post',
-			data: {
-				'nm_barang': nm_barang
-			},
-		}).success(function(response) {
-			let data = $.parseJSON(response);
-			// let data = JSON.parse(response)
-			let qty_default = "1";
-
-			for (let i = 0; i < data.length; i++) {
-				data = data[i];
-				document.getElementById('id_barang').value = data.id_barang;
-				document.getElementById('kd_barang').value = data.kd_barang;
-				document.getElementById('nmbrg_dtrbmasuk').value = data.nm_barang;
-				document.getElementById('stok_barang').value = data.stok_barang;
-
-				document.getElementById('qty_dtrbmasuk').value = qty_default;
-				document.getElementById('sat_dtrbmasuk').value = data.sat_barang;
-				document.getElementById('hrgjual_dtrbmasuk').value = data.hrgjual_barang;
-				document.getElementById('hrgsat_dtrbmasuk').value = data.hrgsat_barang;
-				document.getElementById('indikasi').value = data.indikasi;
-			}
-
-		});
-	})
-
 
 	$(document).on('click', '#kode', function() {
 		$("#example").DataTable().destroy();
@@ -990,8 +947,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 		var sat_dtrbmasuk = document.getElementById('sat_dtrbmasuk').value;
 		var hrgsat_dtrbmasuk = document.getElementById('hrgsat_dtrbmasuk').value;
 		var hrgjual_dtrbmasuk = document.getElementById('hrgjual_dtrbmasuk').value;
-		
-		var no_batch = document.getElementById('no_batch').value;
+
+        var no_batch = document.getElementById('no_batch').value;
 		var exp_date = document.getElementById('exp_date').value;
 
 		if (nmbrg_dtrbmasuk == "") {
@@ -1144,6 +1101,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 		var dp_bayar1x = dp_bayar1.replace(".", "");
 		var sisa_bayar1x = sisa_bayar1.replace(".", "");
 
+        var diskon2 = document.getElementById('diskon2').value;
+    	
 		if (nm_supplier == "") {
 			alert('Belum ada data supplier');
 		} else {
@@ -1167,7 +1126,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 					'ttl_trkasir': ttl_trkasir1x,
 					'dp_bayar': dp_bayar1x,
 					'sisa_bayar': sisa_bayar1x,
-					'carabayar': carabayar
+					'carabayar': carabayar,
+					'diskon2': diskon2
 				},
 				success: function(data) {
 					alert('Proses berhasil !');

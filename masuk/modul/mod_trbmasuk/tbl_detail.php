@@ -61,6 +61,7 @@ color: white;
 							/**$dp_bayar = format_rupiah($rf['dp_bayar']);
 							$carabayar = $rf['carabayar'];**/
 
+
 							$sumprice=mysqli_query($GLOBALS["___mysqli_ston"], "SELECT kd_trbmasuk, SUM(hrgttl_dtrbmasuk) as grandnya FROM trbmasuk_detail 
 							WHERE kd_trbmasuk='$kd_trbmasuk'");
 							$ttlprice=mysqli_fetch_array($sumprice);
@@ -92,8 +93,7 @@ color: white;
 											 <td align=right>$r[qty_dtrbmasuk]</td>
 											 <td align=center>$r[sat_dtrbmasuk]</td>
 											 <td align=center>$r[no_batch]</td>
-											 <td align=center>".tgl_indo($r['exp_date'])."</td>
-											 ";
+											 <td align=center>".tgl_indo($r['exp_date'])."</td>";
 								
 								if($rf['jatuhtempo']!=""){
 								    echo "<td align=right>$hnasat_dtrbmasuk</td>
@@ -138,20 +138,12 @@ color: white;
 								
 								<div class='text-right'>
 									<label class='col-sm-6 control-label'>DISKON % & Nominal</label>        		
-									 <div class='col-sm-6'>
-    									 <div class='btn-group btn-group-justified' role='group' aria-label='...'>
-                                            <div class='btn-group' role='group'>
-                                                <input type='text' name='diskon2' id='diskon2' value='' class='form-control'  style='font-size: 18px; color: #000000; font-weight: bold; text-align: right;' autocomplete='off'>
-                                            </div>
-                                            <div class='btn-group' role='group'>
-                                                <input type='text' name='dp_bayar' id='dp_bayar' value='' class='form-control'  style='font-size: 18px; color: #000000; font-weight: bold; text-align: right;' autocomplete='off'>
-                                            </div>
-                                            <div class='btn-group' role='group'>
-                                                <button type='button' class='btn btn-primary' id='diskon_enter'>Enter</button>
-                                              </div>
-                                        </div>
-                                    </div>
-									
+									 <div class='col-sm-2'>
+										<input type='text' name='diskon2'  id='diskon2' value='' class='form-control'  style='font-size: 18px; color: #000000; font-weight: bold; text-align: right;' autocomplete='off'>
+									 </div>
+									 <div class='col-sm-4'>
+										<input type='text' name='dp_bayar'  id='dp_bayar' value='' class='form-control'  style='font-size: 18px; color: #000000; font-weight: bold; text-align: right;' autocomplete='off'>
+									 </div>
 								</div>
 								
 								<div class='text-right'>
@@ -232,6 +224,34 @@ $(document).ready(function () {
 			document.getElementById("sisa_bayar").value = formatRupiah(total2);
 	
 	}
+	
+	    // hilangkan (,)/(.) pada kolom diskon hanya bilangan bulat..
+        $('#diskon2').keyup(function(e) {
+    		//letakan fungsi anda disini
+            var diskon = document.getElementById('diskon2').value;
+        //     var ttl_hidden = document.getElementById('ttl_trkasir_hid').value;
+            
+        //     if(diskon != 0){                
+        //         $('#diskon2').attr('disabled', true);
+        // 	}else if(diskon == 0){
+        //         $('#diskon2').attr('disabled', false);
+        //         $('#ttl_trkasir').val(ttl_hidden);
+        // 	}
+        	
+    		if(diskon.includes(',')){
+    		    
+    	        var diskon1 = diskon.replace(/\,/g, "");
+    			document.getElementById('diskon2').value = diskon1;
+    			    
+    		} else
+    		if(diskon.includes('.')){
+    		    
+    		    var diskon1 = diskon.replace(/\./g, "");
+    			document.getElementById('diskon2').value = diskon1;
+    		}
+    			
+		});
+		
         //hitung diskon2
         $('#diskon2').keydown(function(e) {
             if (e.which == 13) { // e.which == 13 merupakan kode yang mendeteksi ketika anda   // menekan tombol enter di keyboard
@@ -262,22 +282,6 @@ function hitungdiskon(){
     document.getElementById("diskon2").value = formatRupiah(diskon2);
     document.getElementById("sisa_bayar").value = formatRupiah(total5);
 
-}
 
-    $('#diskon_enter').on('click', function(){
-        let diskon = $('#dp_bayar').val();
-    	let diskon2 = $('#diskon2').val();
-    		    
-    	if(diskon > 0 && diskon2 == 0){
-            HitungDP();
-            $('#dp_bayar').attr('disabled', true);
-            $('#diskon2').attr('disabled', true);
-    	} else if(diskon == 0 && diskon2 > 0){
-    	    hitungdiskon();
-    	    $('#dp_bayar').attr('disabled', true);
-            $('#diskon2').attr('disabled', true);
-    	} else {
-    	    alert('Hanya dibolehkan 1 opsi diskon !!!')
-    	}
-    })
+}
 </script>

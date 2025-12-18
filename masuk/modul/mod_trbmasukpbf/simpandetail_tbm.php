@@ -35,7 +35,7 @@ if ($ketemucekdetail > 0){
 $id_dtrbmasuk = $rcek['id_dtrbmasuk'];
 $qtylama = $rcek['qty_dtrbmasuk'];
 $ttlqty = $qtylama + $qty_dtrbmasuk;
-$ttlharga = $ttlqty * $hnasat_dtrbmasuk;
+$ttlharga = round(($ttlqty * $hnasat_dtrbmasuk),0);
 
 mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE trbmasuk_detail SET 
                                         qty_dtrbmasuk = '$ttlqty',
@@ -56,15 +56,25 @@ $rst=mysqli_fetch_array($cekstok);
 $stok_barang = $rst['stok_barang'];
 $stokakhir = (($stok_barang - $qtylama) + $ttlqty);
 
-mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE barang SET 
+    mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE barang SET 
                                           stok_barang = '$stokakhir', 
                                           hna = '$hnasat_dtrbmasuk',
-                                          hrgsat_barang = '$hrgsat_dtrbmasuk'
+                                          hrgsat_barang = '$hrgsat_dtrbmasuk'                                          
                                           WHERE id_barang = '$id_barang'");
+									
+	$caribrgmasuk = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk WHERE kd_trbmasuk = '$kd_trbmasuk'");
+	$brm = mysqli_num_rows($caribrgmasuk);
+	if($brm == 0){
+	    mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE  trkasir_restore SET 
+	        qty_dtrkasir        = '$ttlqty', 
+	        hrgjual_dtrkasir    = '$hrgjual_dtrbmasuk', 
+	        hrgttl_dtrkasir     = '$ttlharga'
+	    WHERE kd_trkasir = '$kd_trbmasuk' AND id_barang = '$id_barang'");
+	}
 									
 }else{
 $faktordiskon = (1-($diskon/100));
-$ttlharga = $qty_dtrbmasuk * $hnasat_dtrbmasuk * $faktordiskon ;
+$ttlharga = round(($qty_dtrbmasuk * $hnasat_dtrbmasuk * $faktordiskon),0) ;
 
 mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO trbmasuk_detail(kd_trbmasuk,
 										id_barang,
@@ -104,9 +114,14 @@ $stokakhir = $stok_barang + $qty_dtrbmasuk;
 mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE barang SET 
                                                 stok_barang = '$stokakhir',
                                                 hna = '$hnasat_dtrbmasuk',
-                                                hrgsat_barang = '$hrgsat_dtrbmasuk'
+                                                hrgsat_barang = '$hrgsat_dtrbmasuk'                                               
                                                 WHERE id_barang = '$id_barang'");
 
+    $caribrgmasuk = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk WHERE kd_trbmasuk = '$kd_trbmasuk'");
+	$brm = mysqli_num_rows($caribrgmasuk);
+	if($brm == 0){
+	    mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO trkasir_restore(kd_trkasir, diskon2, id_barang, kd_barang, nmbrg_dtrkasir, qty_dtrkasir, sat_dtrkasir, hrgjual_dtrkasir, hrgttl_dtrkasir) VALUES('$kd_trbmasuk','$_POST[diskon]','$id_barang','$kd_barang','$nmbrg_dtrbmasuk','$qty_dtrbmasuk','$sat_dtrbmasuk','$hrgjual_dtrbmasuk','$ttlharga')");
+	}
 }
 				  
 ?>

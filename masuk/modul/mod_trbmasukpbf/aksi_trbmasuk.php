@@ -22,6 +22,35 @@ $act=$_GET['act'];
 
 // Input admin
 if ($module=='trbmasukpbf' AND $act=='input_trbmasuk'){
+    
+    $caribrgmasuk = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk WHERE kd_trbmasuk = '$_POST[kd_trbmasuk]'");
+	$brm = mysqli_num_rows($caribrgmasuk);
+	if($brm == 0){
+	    $shift = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM waktukerja ORDER BY id_shift DESC LIMIT 1");
+	    $sh = mysqli_fetch_array($shift);
+	    
+	    if($sh['shift']=='pagi'){
+	        $rshift = '1';
+	    } else {
+	        $rshift = '2';
+	    }
+	    
+	   // mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE  trkasir_restore SET 
+	   //     petugas             = '$_POST[petugas]', 
+	   //     shift               = '$rshift', 
+	   //     tgl_trkasir         = '$_POST[tgl_trbmasuk]',
+	   //     nm_pelanggan        = '$_POST[nm_supplier]',
+	   //     tlp_pelanggan       = '$_POST[tlp_supplier]',
+	   //     alamat_pelanggan    = '$_POST[alamat_trbmasuk]',
+	   //     ttl_trkasir         = '$_POST[ttl_trkasir]',
+	   //     dp_bayar            = '$_POST[dp_bayar]',
+	   //     diskon1             = '$_POST[diskon2]',
+	   //     diskon2             = '',
+	   //     sisa_bayar          = '$_POST[sisa_bayar]',
+	   //     ket_trkasir         = '$_POST[ket_trbmasuk]',
+	   //     id_carabayar        = '$_POST[carabayar]'		
+	   // WHERE kd_trkasir = '$_POST[kd_trbmasuk]'");
+	}
 
     mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO 
 										trbmasuk(id_resto,
@@ -53,12 +82,12 @@ if ($module=='trbmasukpbf' AND $act=='input_trbmasuk'){
 										'$_POST[ket_trbmasuk]',
 										'$_POST[jatuhtempo]',
 										'$_POST[carabayar]',
-										'pbf'
+										'PBF'
 										)");
-										
+
 	mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO kartu_stok(kode_transaksi) VALUES('$_POST[kd_trbmasuk]')");
-	
-	mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE kdbm SET stt_kdbm = 'OFF' WHERE id_admin = '$_SESSION[idadmin]' AND id_resto = 'pusat' AND kd_trbmasuk = '$_POST[kd_trbmasuk]'");
+
+    mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE kdbm SET stt_kdbm = 'OFF' WHERE id_admin = '$_SESSION[idadmin]' AND id_resto = 'pusat' AND kd_trbmasuk = '$_POST[kd_trbmasuk]'");
 										
 										
 	//echo "<script type='text/javascript'>alert('Transkasi berhasil ditambahkan !');window.location='../../media_admin.php?module=".$module."'</script>";
@@ -122,7 +151,7 @@ elseif ($module=='trbmasukpbf' AND $act=='hapus'){
   mysqli_query($GLOBALS["___mysqli_ston"], "DELETE FROM trbmasuk WHERE id_trbmasuk = '$_GET[id]'");
   mysqli_query($GLOBALS["___mysqli_ston"], "DELETE FROM kartu_stok WHERE kode_transaksi = '$kd_trbmasuk'");
 
-  echo "<script type='text/javascript'>alert('Data berhasil dihapus !');window.location='../../media_admin.php?module=".$module."'</script>";
+	echo "<script type='text/javascript'>alert('Data berhasil dihapus !');window.location='../../media_admin.php?module=".$module."'</script>";
 }
 
 }

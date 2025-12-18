@@ -5,18 +5,18 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
     echo "<div class='error msg'>Untuk mengakses Modul anda harus login.</div>";
 } else {
 
-    $aksi = "modul/mod_trbmasuk/aksi_trbmasuk.php";
-    $aksi_trbmasuk = "masuk/modul/mod_trbmasuk/aksi_trbmasuk.php";
+    $aksi = "modul/mod_trbmasukpbf/aksi_trbmasuk.php";
+    $aksi_trbmasuk = "masuk/modul/mod_trbmasukpbf/aksi_trbmasuk.php";
     switch ($_GET['act']) {
             // Tampil barang
         default:
 
 
             $tampil_trbmasuk = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk 
-	  WHERE id_resto = 'pusat'
+	  WHERE id_resto = 'pusat' and jenis = 'pbf'
 	  ORDER BY trbmasuk.id_trbmasuk DESC");
 
-
+       
 ?>
 
 
@@ -31,7 +31,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
                     <a class='btn  btn-success btn-flat' href='?module=trbmasukpbf&act=tambah'>TAMBAH</a>
                     <a class='btn  btn-info btn-flat' href='?module=trbmasukpbf&act=cari'>CARI NOMOR BATCH</a>
                     <a class='btn  btn-danger btn-flat' href='?module=trbmasukpbf&act=jatuhtempo'>Filter Jatuh Tempo</a>
-                     <a class='btn  btn-primary btn-flat' href='?module=trbmasukpbf&act=pembelian'>Filter Pembelian</a>
+                    <a class='btn  btn-primary btn-flat' href='?module=trbmasukpbf&act=pembelian'>Filter Pembelian</a>
+                    <a class='btn  btn-secondary btn-success' href='?module=trbmasukpbf&act=distributor'>Filter Distributor</a>
                     <div></div>
                     <p>
                     <p>
@@ -196,7 +197,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 				</div>
 				<div class='box-body table-responsive'>
 				
-						<form onsubmit='return false;' method=POST action='$aksi?module=trbmasuk&act=input_trbmasuk' enctype='multipart/form-data' class='form-horizontal'>
+						<form onsubmit='return false;' method=POST action='$aksi?module=trbmasukpbf&act=input_trbmasuk' enctype='multipart/form-data' class='form-horizontal'>
 						
 						        <input type=hidden name='id_trbmasuk' id='id_trbmasuk' value='$re[id_trbmasuk]'>
 							   <input type=hidden name='kd_trbmasuk' id='kd_trbmasuk' value='$kdtransaksi'>
@@ -289,20 +290,41 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									
 									<label class='col-sm-4 control-label'>Nama Barang</label>        		
 										<div class='col-sm-7'>
-											<input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
+											<div class='btn-group btn-group-justified' role='group' aria-label='...'>
+                                                <div class='btn-group' role='group'>
+											        <input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
+                                                    
+                                                </div>
+                                                <div class='btn-group' role='group'>
+                                                    <button type='button' class='btn btn-primary' id='nmbrg_dtrbmasuk_enter'>Enter</button>
+                                                </div>
+                                            </div>
 										</div>
 										
-									<label class='col-sm-4 control-label'>Qty</label>        		
+									<label class='col-sm-4 control-label'>Qty Grosir</label>        		
 										<div class='col-sm-7'>
 											<input type='number' name='qty_dtrbmasuk' id='qty_dtrbmasuk' class='form-control' autocomplete='off'>
 										</div>
-										
-									<label class='col-sm-4 control-label'>Satuan</label>        		
+									
+									<label class='col-sm-4 control-label'>Satuan Grosir</label>        		
+									 <div class='col-sm-7'>
+										<select name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' >";
+                                        $tampil = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM satuan ORDER BY nm_satuan ASC");
+                                        while ($rk = mysqli_fetch_array($tampil)) {
+                                            echo "<option value=$rk[nm_satuan]>$rk[nm_satuan]</option>";
+                                        }
+                                        echo "
+                                        </select>
+									 </div>
+																		
+									
+									<label class='col-sm-4 control-label'>Konversi</label>        		
 										<div class='col-sm-7'>
-											<input type=text name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' autocomplete='off'>
+											<input type=number name='konversi' id='konversi' class='form-control' autocomplete='off' required>
+											
 										</div>
-										
-									<label class='col-sm-4 control-label'>HNA</label>        		
+											
+									<label class='col-sm-4 control-label'>HNA Grosir</label>        		
 										<div class='col-sm-7'>
 											<input type=text name='hnasat_dtrbmasuk' id='hnasat_dtrbmasuk' class='form-control' autocomplete='off'>
 											
@@ -313,7 +335,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 											<input type=text name='hrgjual_dtrbmasuk' id='hrgjual_dtrbmasuk' class='form-control' autocomplete='off'>
 											
 										</div>
-										
+									
 									<label class='col-sm-4 control-label'>Diskon Produk (%)</label>        		
 										<div class='col-sm-7'>
 											<input type=text name='diskon' id='diskon' class='form-control' autocomplete='off'>
@@ -334,9 +356,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 													<button type='button' class='btn btn-success right-block' onclick='simpan_detail();'>SIMPAN DETAIL</button>
 												</div>
 										</div>
+										
 									
-										
-										
 								</div>
 								
 									
@@ -351,7 +372,192 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 
 
             break;
-        case "ubah":
+        case "ubah" :
+            $ubah=mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk 
+	WHERE trbmasuk.id_trbmasuk='$_GET[id]'");
+            $re=mysqli_fetch_array($ubah);
+
+            echo "
+		  <div class='box box-primary box-solid'>
+				<div class='box-header with-border'>
+					<h3 class='box-title'>UBAH TRANSAKSI BARANG MASUK</h3>
+					<div class='box-tools pull-right'>
+						<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>
+                    </div><!-- /.box-tools -->
+				</div>
+				<div class='box-body table-responsive'>
+				
+						<form onsubmit='return false;' method=POST action='$aksi?module=trbmasukpbf&act=ubah_trbmasuk' enctype='multipart/form-data' class='form-horizontal'>
+						
+						       <input type=hidden name='id_trbmasuk' id='id_trbmasuk' value='$re[id_trbmasuk]'>
+							   <input type=hidden name='kd_trbmasuk' id='kd_trbmasuk' value='$re[kd_trbmasuk]'>
+							   <input type=hidden name='stt_aksi' id='stt_aksi' value='ubah_trbmasuk'>
+							   <input type=hidden name='id_supplier' id='id_supplier' value='$re[id_supplier]'>
+							   <input type=hidden name='petugas' id='petugas' value='$petugas'>
+							 
+						<div class='col-lg-6'>
+						
+							<div class='form-group'>
+							  
+								<label class='col-sm-4 control-label'>Tanggal</label>
+										<div class='col-sm-6'>
+											<div class='input-group date'>
+												<div class='input-group-addon'>
+													<span class='glyphicon glyphicon-th'></span>
+												</div>
+													<input type='text' class='datepicker' name='tgl_trbmasuk' id='tgl_trbmasuk' required='required' value='$re[tgl_trbmasuk]' autocomplete='off'>
+											</div>
+										</div>
+										
+									<label class='col-sm-4 control-label'>Kode Transaksi</label>        		
+										<div class='col-sm-6'>
+											<input type=text name='kd_hid' id='kd_hid' class='form-control' required='required' value='$re[kd_trbmasuk]' autocomplete='off' Disabled>
+										</div>
+										
+									<label class='col-sm-4 control-label'>Supplier</label>        		
+										<div class='col-sm-6'>
+											<div class='input-group'>
+												<input type='text' class='form-control' name='nm_supplier' id='nm_supplier' required='required' value='$re[nm_supplier]' autocomplete='off' Disabled>
+													<div class='input-group-addon'>
+														<button type=button data-toggle='modal' data-target='#ModalSupplier' href='#'><span class='glyphicon glyphicon-search'></span></button>
+													</div>
+											</div>
+										</div>
+									
+									<label class='col-sm-4 control-label'>Telepon</label>        		
+										<div class='col-sm-6'>
+											<input type=text name='tlp_supplier' id='tlp_supplier' class='form-control' value='$re[tlp_supplier]' autocomplete='off'>
+										</div>
+										
+									<label class='col-sm-4 control-label'>Alamat</label>        		
+										<div class='col-sm-6'>
+											<textarea name='alamat_supplier' id='alamat_supplier' class='form-control' rows='2'>$re[alamat_trbmasuk]</textarea>
+										</div>
+							
+                            
+									<label class='col-sm-4 control-label'>No Faktur</label>        		
+										<div class='col-sm-6'>
+											<textarea name='ket_trbmasuk' id='ket_trbmasuk' class='form-control' rows='2'>$re[ket_trbmasuk]</textarea>
+										</div>
+									
+									<label class='col-sm-4 control-label'>Jatuh Tempo</label>
+										<div class='col-sm-6'>
+											<div class='input-group date'>
+												<div class='input-group-addon'>
+													<span class='glyphicon glyphicon-th'></span>
+												</div>
+													<input type='text' class='datepicker' name='jatuhtempo' id='jatuhtempo' required='required' value='$re[jatuhtempo]' autocomplete='off'>
+											</div>	
+											<div class='buttons'>
+												<button type='button' class='btn btn-primary right-block' onclick='simpan_transaksi();'>SIMPAN TRANSAKSI</button>
+												&nbsp&nbsp&nbsp
+												<input class='btn btn-danger' type='button' value=KEMBALI onclick=self.history.back()>
+												</div>
+										</div>
+									
+							</div>  
+							  
+						</div>
+						
+						<div class='col-lg-6'>
+						
+						<input type=hidden name='id_barang' id='id_barang'>
+								<input type=hidden name='stok_barang' id='stok_barang'>
+								
+								<div class='form-group'>
+								
+									
+									<label class='col-sm-4 control-label'>Kode Barang</label>        		
+										<div class='col-sm-7'>
+											<div class='input-group'>
+												<input type='text' class='form-control' name='kd_barang' id='kd_barang' autocomplete='off'>
+													<div class='input-group-addon'>
+														<button type=button data-toggle='modal' data-target='#ModalItem' href='#' id='kode'><span class='glyphicon glyphicon-search'></span></button>
+													</div>
+											</div>
+										</div>
+									
+									<label class='col-sm-4 control-label'>Nama Barang</label>        		
+										<div class='col-sm-7'>
+											<div class='btn-group btn-group-justified' role='group' aria-label='...'>
+                                                <div class='btn-group' role='group'>
+											        <input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
+                                                    
+                                                </div>
+                                                <div class='btn-group' role='group'>
+                                                    <button type='button' class='btn btn-primary' id='nmbrg_dtrbmasuk_enter'>Enter</button>
+                                                </div>
+                                            </div>
+										</div>
+										
+									<label class='col-sm-4 control-label'>Qty Grosir</label>        		
+										<div class='col-sm-7'>
+											<input type='number' name='qty_dtrbmasuk' id='qty_dtrbmasuk' class='form-control' autocomplete='off'>
+										</div>
+									
+									<label class='col-sm-4 control-label'>Satuan Grosir</label>        		
+									 <div class='col-sm-7'>
+										<select name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' >";
+                                        $tampil = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM satuan ORDER BY nm_satuan ASC");
+                                        while ($rk = mysqli_fetch_array($tampil)) {
+                                            echo "<option value=$rk[nm_satuan]>$rk[nm_satuan]</option>";
+                                        }
+                                        echo "
+                                        </select>
+									 </div>
+
+
+									<label class='col-sm-4 control-label'>Konversi</label>
+										<div class='col-sm-7'>
+											<input type=number name='konversi' id='konversi' class='form-control' autocomplete='off' required>
+
+										</div>
+
+									<label class='col-sm-4 control-label'>HNA Grosir</label>
+										<div class='col-sm-7'>
+											<input type=text name='hnasat_dtrbmasuk' id='hnasat_dtrbmasuk' class='form-control' autocomplete='off'>
+
+										</div>
+
+									<label class='col-sm-4 control-label'>Harga Jual</label>
+										<div class='col-sm-7'>
+											<input type=text name='hrgjual_dtrbmasuk' id='hrgjual_dtrbmasuk' class='form-control' autocomplete='off'>
+
+										</div>
+
+									<label class='col-sm-4 control-label'>Diskon Produk (%)</label>
+										<div class='col-sm-7'>
+											<input type=text name='diskon' id='diskon' class='form-control' autocomplete='off'>
+
+										</div>
+
+									<label class='col-sm-4 control-label'>No. Batch</label>
+										<div class='col-sm-7'>
+											<input type='text' name='no_batch' id='no_batch' class='form-control' autocomplete='off'>
+
+										</div>
+
+									<label class='col-sm-4 control-label'>Exp. Date</label>
+										<div class='col-sm-7'>
+											<input type='text' class='datepicker' name='exp_date' id='exp_date' required='required' autocomplete='off'>
+											</p>
+												<div class='buttons'>
+													<button type='button' class='btn btn-success right-block' onclick='simpan_detail();'>SIMPAN DETAIL</button>
+												</div>
+										</div>
+
+
+								</div>
+						</form>
+							  
+				</div> 
+				
+				<div id='tabeldata'>
+				
+			</div>";
+
+            break;
+        case "tampil":
             //cek apakah ada kode transaksi ON berdasarkan user
 
             $ubah = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk 
@@ -474,7 +680,15 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									
 									<label class='col-sm-4 control-label'>Nama Barang</label>        		
 										<div class='col-sm-7'>
-											<input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
+											<div class='btn-group btn-group-justified' role='group' aria-label='...'>
+                                                <div class='btn-group' role='group'>
+											        <input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
+                                                    
+                                                </div>
+                                                <div class='btn-group' role='group'>
+                                                    <button type='button' class='btn btn-primary' id='nmbrg_dtrbmasuk_enter'>Enter</button>
+                                                </div>
+                                            </div>
 										</div>
 										
 									<label class='col-sm-4 control-label'>Qty</label>        		
@@ -487,20 +701,39 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 											<input type=text name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' autocomplete='off'>
 										</div>
 										
+									<label class='col-sm-4 control-label'>HNA</label>        		
+										<div class='col-sm-7'>
+											<input type=text name='hnasat_dtrbmasuk' id='hnasat_dtrbmasuk' class='form-control' autocomplete='off'>
+											
+										</div>
+									
 									<label class='col-sm-4 control-label'>Harga Jual</label>        		
 										<div class='col-sm-7'>
 											<input type=text name='hrgjual_dtrbmasuk' id='hrgjual_dtrbmasuk' class='form-control' autocomplete='off'>
 											
 										</div>
-										
-									<label class='col-sm-4 control-label'>HNA</label>        		
+									
+									<label class='col-sm-4 control-label'>Diskon Produk (%)</label>        		
 										<div class='col-sm-7'>
-											<input type=text name='hnasat_dtrbmasuk' id='hnasat_dtrbmasuk' class='form-control' autocomplete='off'>
+											<input type=text name='diskon' id='diskon' class='form-control' autocomplete='off'>
+											
+										</div>
+									
+									<label class='col-sm-4 control-label'>No. Batch</label>        		
+										<div class='col-sm-7'>
+											<input type='text' name='no_batch' id='no_batch' class='form-control' autocomplete='off'>
+											
+										</div>
+									
+									<label class='col-sm-4 control-label'>Exp. Date</label>        		
+										<div class='col-sm-7'>
+											<input type='text' class='datepicker' name='exp_date' id='exp_date' required='required' autocomplete='off'>
 											</p>
 												<div class='buttons'>
 													<button type='button' class='btn btn-success right-block' onclick='simpan_detail();'>SIMPAN DETAIL</button>
 												</div>
 										</div>
+										
 										
 								</div>
 						</div>
@@ -510,14 +743,14 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
 									  
 				</div>";
         ?>
-            <div>
+            <div class='box-body table-responsive'>
                 <table id="example1" class="table table-condensed table-bordered table-striped table-hover table-responsive">
                     <thead>
                         <th>No</th>
                         <th>Kode Barang</th>
                         <th>Nama Barang</th>
                         <th>Qty</th>
-                        <th>Sat</th>
+                        <th>Satuan</th>
                         <th>No. Batch</th>
 						<th>Exp. Date</th>
                         <th>HNA</th>
@@ -552,7 +785,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
                     </tbody>
 
                     <tr>
-                        <td align='center' colspan='5'><strong>TOTAL Rp. <?php echo $totalharga1; ?> </strong> </td>
+                        <td align='center' colspan='5'><strong>TOTAL Rp. <?php echo format_rupiah($totalharga1); ?> </strong> </td>
                         <td colspan='2'><strong> DISKON Rp. <?php echo $diskon1;  ?>,- </strong></td>
                     </tr>
                     <tr>
@@ -562,7 +795,7 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
                             </h3>
                         </td>
                         <td colspan='2'>
-                            <h3><strong> Rp. <?php echo $sisabayar1; ?> ,- </strong></h3>
+                            <h3><strong> Rp. <?php echo $sisabayar1 ?> ,- </strong></h3>
                         </td>
                     </tr>
 
@@ -571,178 +804,8 @@ if (empty($_SESSION['username']) and empty($_SESSION['passuser'])) {
             </div>
 <?php
             break;
-
-        case "edit" :
-            $kode = $_GET['id'];
-
-
-            $edit = $db->query("select * from trbmasuk where id_trbmasuk ='$kode' ");
-            $re = $edit->fetch_array();
-echo"
-            <div class='box box-primary box-solid table-responsive'>
-				<div class='box-header with-border'>
-					<h3 class='box-title'>REVIEW TRANSAKSI BARANG MASUK DARI PBF</h3>
-					<div class='box-tools pull-right'>
-						<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>
-                    </div><!-- /.box-tools -->
-				</div>
-				<div class='box-body table-responsive'>
-
-						<form onsubmit='return false;' method=POST action='$aksi?module=trbmasuk&act=ubah_trbmasuk' enctype='multipart/form-data' class='form-horizontal'>
-
-						       <input type=hidden name='id_trbmasuk' id='id_trbmasuk' value='$re[id_trbmasuk]'>
-							   <input type=hidden name='kd_trbmasuk' id='kd_trbmasuk' value='$re[kd_trbmasuk]'>
-							   <input type=hidden name='stt_aksi' id='stt_aksi' value='ubah_trbmasuk'>
-							   <input type=hidden name='id_supplier' id='id_supplier' value='$re[id_supplier]'>
-							   <input type=hidden name='petugas' id='petugas' value='$petugas'>
-
-						<div class='col-lg-6'>
-
-							<div class='form-group'>
-
-								<label class='col-sm-4 control-label'>Tanggal</label>
-										<div class='col-sm-6'>
-											<div class='input-group date'>
-												<div class='input-group-addon'>
-													<span class='glyphicon glyphicon-th'></span>
-												</div>
-													<input type='text' class='datepicker' name='tgl_trbmasuk' id='tgl_trbmasuk' required='required' value='$re[tgl_trbmasuk]' autocomplete='off'>
-											</div>
-										</div>
-
-									<label class='col-sm-4 control-label'>Kode Transaksi</label>
-										<div class='col-sm-6'>
-											<input type=text name='kd_hid' id='kd_hid' class='form-control' required='required' value='$re[kd_trbmasuk]' autocomplete='off' Disabled>
-										</div>
-
-									<label class='col-sm-4 control-label'>Supplier</label>
-										<div class='col-sm-6'>
-											<div class='input-group'>
-												<input type='text' class='form-control' name='nm_supplier' id='nm_supplier' required='required' value='$re[nm_supplier]' autocomplete='off' Disabled>
-													<div class='input-group-addon'>
-														<button type=button data-toggle='modal' data-target='#ModalSupplier' href='#'><span class='glyphicon glyphicon-search'></span></button>
-													</div>
-											</div>
-										</div>
-
-									<label class='col-sm-4 control-label'>Telepon</label>
-										<div class='col-sm-6'>
-											<input type=text name='tlp_supplier' id='tlp_supplier' class='form-control' value='$re[tlp_supplier]' autocomplete='off'>
-										</div>
-
-									<label class='col-sm-4 control-label'>Alamat</label>
-										<div class='col-sm-6'>
-											<textarea name='alamat_supplier' id='alamat_supplier' class='form-control' rows='2'>$re[alamat_trbmasuk]</textarea>
-										</div>
-
-									<label class='col-sm-4 control-label'>No Faktur</label>        		
-										<div class='col-sm-6'>
-											<textarea name='ket_trbmasuk' id='ket_trbmasuk' class='form-control' rows='2' >$re[ket_trbmasuk]  </textarea>
-										</div>
-									
-									<label class='col-sm-4 control-label'>Jatuh Tempo</label>
-										<div class='col-sm-6'>
-											<div class='input-group date'>
-												<div class='input-group-addon'>
-													<span class='glyphicon glyphicon-th'></span>
-												</div>
-													<input type='text' class='datepicker' name='jatuhtempo' id='jatuhtempo' required='required'  autocomplete='off' value='$re[jatuhtempo]'>
-											</div>	
-											<div class='buttons'>
-												<button type='button' class='btn btn-primary right-block' onclick='simpan_transaksi();'>SIMPAN TRANSAKSI</button>
-												&nbsp&nbsp&nbsp
-												<input class='btn btn-danger' type='button' value=KEMBALI onclick=self.history.back()>
-												</div>
-										</div>
-
-
-
-							</div>
-
-						</div>
-
-						<div class='col-lg-6'>
-
-
-								<input type=hidden name='id_barang' id='id_barang'>
-								<input type=hidden name='stok_barang' id='stok_barang'>
-								
-								<div class='form-group'>
-								
-									
-									<label class='col-sm-4 control-label'>Kode Barang</label>        		
-										<div class='col-sm-7'>
-											<div class='input-group'>
-												<input type='text' class='form-control' name='kd_barang' id='kd_barang' autocomplete='off'>
-													<div class='input-group-addon'>
-														<button type=button data-toggle='modal' data-target='#ModalItem' href='#' id='kode'><span class='glyphicon glyphicon-search'></span></button>
-													</div>
-											</div>
-										</div>
-									
-									<label class='col-sm-4 control-label'>Nama Barang</label>        		
-										<div class='col-sm-7'>
-											<input type=text name='nmbrg_dtrbmasuk' id='nmbrg_dtrbmasuk' class='typeahead form-control' autocomplete='off'>
-										</div>
-										
-									<label class='col-sm-4 control-label'>Qty</label>        		
-										<div class='col-sm-7'>
-											<input type='number' name='qty_dtrbmasuk' id='qty_dtrbmasuk' class='form-control' autocomplete='off'>
-										</div>
-										
-									<label class='col-sm-4 control-label'>Satuan</label>        		
-										<div class='col-sm-7'>
-											<input type=text name='sat_dtrbmasuk' id='sat_dtrbmasuk' class='form-control' autocomplete='off'>
-										</div>
-										
-									<label class='col-sm-4 control-label'>HNA</label>        		
-										<div class='col-sm-7'>
-											<input type=text name='hnasat_dtrbmasuk' id='hnasat_dtrbmasuk' class='form-control' autocomplete='off'>
-											
-										</div>
-									
-									<label class='col-sm-4 control-label'>Harga Jual</label>        		
-										<div class='col-sm-7'>
-											<input type=text name='hrgjual_dtrbmasuk' id='hrgjual_dtrbmasuk' class='form-control' autocomplete='off'>
-											
-										</div>
-										
-									<label class='col-sm-4 control-label'>Diskon Produk (%)</label>        		
-										<div class='col-sm-7'>
-											<input type=text name='diskon' id='diskon' class='form-control' autocomplete='off'>
-											
-										</div>
-									
-									<label class='col-sm-4 control-label'>No. Batch</label>        		
-										<div class='col-sm-7'>
-											<input type='text' name='no_batch' id='no_batch' class='form-control' autocomplete='off'>
-											
-										</div>
-									
-									<label class='col-sm-4 control-label'>Exp. Date</label>        		
-										<div class='col-sm-7'>
-											<input type='text' class='datepicker' name='exp_date' id='exp_date' required='required' autocomplete='off'>
-											</p>
-												<div class='buttons'>
-													<button type='button' class='btn btn-success right-block' onclick='simpan_detail();'>SIMPAN DETAIL</button>
-												</div>
-										</div>
-									
-										
-										
-								</div>
-								
-									
-						</div>
-						</form>
-							  
-				</div> 
-				
-				<div id='tabeldata'>
-                </div>";
-
-            break ;
-            case "cari":
+            
+        case "cari":
             
 ?>
             <div class="box box-primary box-solid">
@@ -764,12 +827,12 @@ echo"
                             <label for="inputPassword" class="col-sm-2 col-form-label">&nbsp;</label>
                             <div class="col-sm-10">
                                 <button type="submit" class="btn btn-primary">
-                                    <span class='glyphicon glyphicon-search'></span>
+                                    <span class="glyphicon glyphicon-search"></span>
                                     Search
                                 </button>
                                 
                                 <button class='btn btn-primary' type='button' onclick=self.history.back()>
-                                    <span class='glyphicon glyphicon-chevron-left'></span>
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
                                     Kembali
                                 </button>
                             </div>
@@ -779,8 +842,80 @@ echo"
             </div>
 <?php
             break;
+        
+        case "carinobatch":
+            $nobatch = $_POST['no_batch'];
+            
+            $caridetail = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk_detail a 
+            JOIN trbmasuk b ON a.kd_trbmasuk = b.kd_trbmasuk WHERE a.no_batch='$nobatch'");
+			
+			$row = mysqli_fetch_array($caridetail);
+?>
 
-            case "jatuhtempo" ;
+            <div class="box box-primary box-solid">
+                <div class='box-header with-border'>
+    				<h3 class='box-title'>SEACRH BY No. Batch</h3>
+    				<div class='box-tools pull-right'>
+    					<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>
+                    </div><!-- /.box-tools -->
+    			</div>
+    			<div class='box-body table-responsive'>
+    			    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Nama Barang</label>
+                        <label for="staticEmail" class="col-sm-10 col-form-label">: <?=$row['nmbrg_dtrbmasuk']?></label>
+                        
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Satuan</label>
+                        <label for="staticEmail" class="col-sm-10 col-form-label">: <?=$row['sat_dtrbmasuk']?></label>
+                        
+                        <label for="staticEmail" class="col-sm-2 col-form-label">No. Batch</label>
+                        <label for="staticEmail" class="col-sm-10 col-form-label">: <?=$row['no_batch']?></label>
+                        
+                    </div>
+                    
+                    <button class='btn btn-primary' type='button' onclick=self.history.back()>
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        Kembali
+                    </button>
+                    <hr>
+    			    
+    			    <table id="example1" class="table table-condensed table-bordered table-striped table-hover table-responsive">
+        			    <thead>
+        					<th class="text-center">No</th>
+        					<th class="text-center">Nama Distributor</th>
+        					<th class="text-center">Harga Beli</th>
+        					<th class="text-center">Tanggal Masuk</th>
+        					<th class="text-center">Qty</th>
+        					<th class="text-center">Tanggal Exp.</th>
+        					<th class="text-center">Petugas Input</th>
+        				</thead>
+        				<tbody>
+        				    <?php
+        				        $caridetail1 = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk_detail a 
+        				        JOIN trbmasuk b ON a.kd_trbmasuk = b.kd_trbmasuk WHERE a.no_batch='$nobatch'");
+    			
+        				        $no=1;
+        				        while($dt = mysqli_fetch_array($caridetail1)):
+        				    ?>
+        				    <tr>
+        				        <td class="text-center"><?= $no++?></t>
+            					<td class="text-left"><?= $dt['nm_supplier']?></td>
+            					<td class="text-center"><?= format_rupiah($dt['hrgsat_dtrbmasuk'])?></td>
+            					<td class="text-center"><?= tgl_indo($dt['tgl_trbmasuk'])?></td>
+            					<td class="text-center"><?= format_rupiah($dt['qty_dtrbmasuk'])?></td>
+            					<td class="text-center"><?= tgl_indo($dt['exp_date'])?></td>
+            					<td class="text-center"><?= $dt['petugas']?></td>
+        				    </tr>
+        				    
+        				    <?php endwhile; ?>
+        				</tbody>
+        			</table>
+        			
+    			</div>
+            </div>
+            
+<?php
+        break;
+         case "jatuhtempo" ;
 
             ?>
                 <div class="box box-primary box-solid">
@@ -875,6 +1010,7 @@ echo"
 							<tr>
 								<th>No</th>
 								<th>tanggal Jatuh Tempo</th>
+								<th>Kode Transaksi</th>
 								<th>Distributor</th>
                                 <th>Nilai Faktur</th>
 							</tr>
@@ -888,6 +1024,7 @@ echo"
 									echo "<tr class='warnabaris' >
 											<td>$no</td>           
 											 <td>$te[jatuhtempo]</td>
+											 <td>$te[kd_trbmasuk]</td>
 											 <td>$te[nm_supplier]</td>
 											 <td style='text-align:right;'>Rp.  $ttl</td>								
 											 
@@ -902,7 +1039,7 @@ echo"
 						echo"
 						            <tr style='background: #00fafa; font-size: 4vh;'>
                                         <td colspan='3'>Total</td>
-                                        <td style='text-align:right;'>Rp.  $tus</td>
+                                        <td style='text-align:right;' colspan='2'>Rp.  $tus</td>
                                     </tr>
 						</tfoot>
 						</table>";
@@ -912,81 +1049,9 @@ echo"
 
 			</div>
 <?php
-        break ;
-        case "carinobatch":
-            $nobatch = $_POST['no_batch'];
-            
-            $caridetail = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk_detail a 
-            JOIN trbmasuk b ON a.kd_trbmasuk = b.kd_trbmasuk WHERE a.no_batch='$nobatch'");
-			
-			$row = mysqli_fetch_array($caridetail);
-?>
+break;
 
-            <div class="box box-primary box-solid">
-                <div class='box-header with-border'>
-    				<h3 class='box-title'>SEACRH BY No. Batch</h3>
-    				<div class='box-tools pull-right'>
-    					<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>
-                    </div><!-- /.box-tools -->
-    			</div>
-    			<div class='box-body table-responsive'>
-    			    <div class="form-group row">
-                        <label for="staticEmail" class="col-sm-2 col-form-label">Nama Barang</label>
-                        <label for="staticEmail" class="col-sm-10 col-form-label">: <?=$row['nmbrg_dtrbmasuk']?></label>
-                        
-                        <label for="staticEmail" class="col-sm-2 col-form-label">Satuan</label>
-                        <label for="staticEmail" class="col-sm-10 col-form-label">: <?=$row['sat_dtrbmasuk']?></label>
-                        
-                        <label for="staticEmail" class="col-sm-2 col-form-label">No. Batch</label>
-                        <label for="staticEmail" class="col-sm-10 col-form-label">: <?=$row['no_batch']?></label>
-                        
-                    </div>
-                    
-                    <button class='btn btn-primary' type='button' onclick=self.history.back()>
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                        Kembali
-                    </button>
-                    <hr>
-    			    
-    			    <table id="example1" class="table table-condensed table-bordered table-striped table-hover table-responsive">
-        			    <thead>
-        					<th class="text-center">No</th>
-        					<th class="text-center">Nama Distributor</th>
-        					<th class="text-center">Harga Beli</th>
-        					<th class="text-center">Tanggal Masuk</th>
-        					<th class="text-center">Qty</th>
-        					<th class="text-center">Tanggal Exp.</th>
-        					<th class="text-center">Petugas Input</th>
-        				</thead>
-        				<tbody>
-        				    <?php
-        				        $caridetail1 = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM trbmasuk_detail a 
-        				        JOIN trbmasuk b ON a.kd_trbmasuk = b.kd_trbmasuk WHERE a.no_batch='$nobatch'");
-    			
-        				        $no=1;
-        				        while($dt = mysqli_fetch_array($caridetail1)):
-        				    ?>
-        				    <tr>
-        				        <td class="text-center"><?= $no++?></t>
-            					<td class="text-left"><?= $dt['nm_supplier']?></td>
-            					<td class="text-center"><?= format_rupiah($dt['hrgsat_dtrbmasuk'])?></td>
-            					<td class="text-center"><?= tgl_indo($dt['tgl_trbmasuk'])?></td>
-            					<td class="text-center"><?= format_rupiah($dt['qty_dtrbmasuk'])?></td>
-            					<td class="text-center"><?= tgl_indo($dt['exp_date'])?></td>
-            					<td class="text-center"><?= $dt['petugas']?></td>
-        				    </tr>
-        				    
-        				    <?php endwhile; ?>
-        				</tbody>
-        			</table>
-        			
-    			</div>
-            </div>
-            
-<?php
-
-        break;
-        case "pembelian" :
+case "pembelian" :
             ?>
             <div class="box box-primary box-solid">
                 <div class="box-header with-border">
@@ -1128,6 +1193,152 @@ echo"
             </div>
             <?php
         break;
+        case "distributor" :
+            ?>
+            <div class="box box-primary box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Cek Total Pembelian Berdasarkan Distributor</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools  -->
+
+                </div>
+                <div class="box-body">
+
+                    <form method="POST" action="?module=trbmasukpbf&act=tampil_distributor" target="_blank" enctype="multipart/form-data" class="form-horizontal">
+
+                        </br></br>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Tanggal Awal</label>
+                            <div class="col-sm-4">
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                    <input type="text" required="required" class="datepicker" id="tgl_awal" name="tgl_awal" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Tanggal Akhir</label>
+                            <div class="col-sm-4">
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                    <input type="text" required="required" class="datepicker" id="tgl_akhir" name="tgl_akhir" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="buttons col-sm-4">
+                                <input class="btn btn-primary" type="submit" name="btn" value="TAMPIL">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+
+                                <a  class ='btn  btn-danger' href='?module=trbmasukpbf'>KEMBALI</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+            <script type="text/javascript">
+                $(function(){
+                    $(".datepicker").datepicker({
+                        format: 'yyyy-mm-dd',
+                        autoclose: true,
+                        todayHighlight: true,
+                    });
+                });
+            </script>
+
+
+            <?php
+            break;
+            case "tampil_distributor":
+            $tgl_awal = $_POST['tgl_awal'];
+            $tgl_akhir = $_POST['tgl_akhir'];
+
+            $list = $db->query("select * from supplier ");
+
+            ?>
+            <div class="box box-primary box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Rekap Pembelian berdasarkan Distributor tanggal <?= $tgl_awal ?> hingga <?= $tgl_akhir ?></h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools -->
+                </div>
+                <div class="box-body">
+
+                    <br><br>
+
+
+                    <table id="example2" class="table table-bordered table-striped" >
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Distributor</th>                            
+                            <th>Lunas</th>
+                            <th>Belum Lunas</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $no=1;
+                        while ($te = $list->fetch_array()){
+                            $totbel = $db->query("select sum(ttl_trbmasuk) as tepo from trbmasuk where id_supplier='$te[id_supplier]' and tgl_trbmasuk between '$tgl_awal' and '$tgl_akhir' ");
+                            $tb=$totbel->fetch_array();
+                            $totbel2 = $db->query("select sum(ttl_trbmasuk) as tepo2 from trbmasuk where carabayar='LUNAS' and id_supplier='$te[id_supplier]' and tgl_trbmasuk between '$tgl_awal' and '$tgl_akhir'");
+                            $tb2= $totbel2->fetch_array();
+                            $totbel3 = $db->query("select sum(ttl_trbmasuk) as tepo3 from trbmasuk where carabayar='KREDIT' and id_supplier='$te[id_supplier]' and tgl_trbmasuk between '$tgl_awal' and '$tgl_akhir'");
+                            $tb3= $totbel3->fetch_array();
+                            $ttl= format_rupiah($tb['tepo']);
+                            $ttl2= format_rupiah($tb2['tepo2']);
+                            $ttl3= format_rupiah($tb3['tepo3']);
+                            echo "<tr class='warnabaris' >
+											<td>$no</td>           
+											 <td>$te[nm_supplier]</td>											 
+											 <td style='text-align:right;'>Rp. $ttl2</td>
+											 <td style='text-align:right;color:red;'>Rp. $ttl3</td>
+											 <td style='text-align:right;color:blue;'>Rp.  $ttl</td>
+										</tr>";
+
+                            $total[]=$tb['tepo'];
+                            $no++;
+                        }
+                        echo"
+						</tbody>
+						<tfoot>
+						"; $tus = format_rupiah(array_sum($total));
+                        $totallunas = $db->query("select sum(ttl_trbmasuk) as lunas from trbmasuk where tgl_trbmasuk between '$tgl_awal' and '$tgl_akhir' and carabayar='LUNAS' ");
+                        $lns = $totallunas ->fetch_array();
+                        $lunas = format_rupiah($lns['lunas']);
+                        $belumlunas = $db->query("select sum(ttl_trbmasuk) as belum from trbmasuk where tgl_trbmasuk between '$tgl_awal' and '$tgl_akhir' and carabayar='KREDIT'");
+                        $blm = $belumlunas ->fetch_array();
+                        $belum = format_rupiah($blm['belum']);
+                        echo"
+						            <tr style='background: #00fafa; font-size: 4vh;'>
+                                        <td colspan='3'>Lunas = Rp. $lunas , Belum Lunas = Rp. $belum  => Total</td>
+                                        <td style='text-align:right;' colspan='2'>Rp.  $tus</td>
+                                    </tr>
+						</tfoot>
+						</table>";
+
+                        ?>
+                </div>
+
+            </div>
+            <?php
+        break;
     }
 }
 ?>
@@ -1157,7 +1368,8 @@ echo"
                             <th style="vertical-align: middle; background-color: #008000; text-align: left; ">Kode</th>
                             <th style="vertical-align: middle; background-color: #008000; text-align: left; ">Nama Barang</th>
                             <th style="vertical-align: middle; background-color: #008000; text-align: right; ">Qty</th>
-                            <th style="vertical-align: middle; background-color: #008000; text-align: center; ">Satuan</th>
+                            <th style="vertical-align: middle; background-color: #008000; text-align: center; ">Sat Grosir</th>
+                            <th style="vertical-align: middle; background-color: #008000; text-align: center; ">Konversi</th>
                             <th style="vertical-align: middle; background-color: #008000; text-align: right; ">HNA</th>
                             <th style="vertical-align: middle; background-color: #008000; text-align: center; ">Pilih</th>
                         </tr>
@@ -1321,9 +1533,9 @@ echo"
 						document.getElementById('kd_barang').value = data.kd_barang;
 						document.getElementById('nmbrg_dtrbmasuk').value = data.nm_barang;
 						document.getElementById('stok_barang').value = data.stok_barang;
-
 						document.getElementById('qty_dtrbmasuk').value = qty_default;
-						document.getElementById('sat_dtrbmasuk').value = data.sat_barang;
+						document.getElementById('sat_dtrbmasuk').value = data.sat_grosir;
+						document.getElementById('konversi').value = data.konversi;
 						document.getElementById('hnasat_dtrbmasuk').value = data.hna;
 						document.getElementById('hrgjual_dtrbmasuk').value = data.hrgjual_barang;
 						document.getElementById('diskon').value = diskon_default;
@@ -1333,6 +1545,37 @@ echo"
 			}
 		})
 	});
+
+    $('#nmbrg_dtrbmasuk_enter').on('click', function(){
+	    let nm_barang = $('#nmbrg_dtrbmasuk').val();
+		$.ajax({
+			url: 'modul/mod_trbmasukpbf/autonamabarang_enter.php',
+			type: 'post',
+			data: {
+				'nm_barang': nm_barang
+			},
+		}).success(function(response) {
+			let data = $.parseJSON(response);
+			// let data = JSON.parse(response)
+			let qty_default = "1";
+			let diskon_default = "0";
+
+			for (let i = 0; i < data.length; i++) {
+				data = data[i];
+				document.getElementById('id_barang').value = data.id_barang;
+				document.getElementById('kd_barang').value = data.kd_barang;
+				document.getElementById('nmbrg_dtrbmasuk').value = data.nm_barang;
+				document.getElementById('stok_barang').value = data.stok_barang;
+				document.getElementById('qty_dtrbmasuk').value = qty_default;
+				document.getElementById('sat_dtrbmasuk').value = data.sat_grosir;
+				document.getElementById('konversi').value = data.konversi;
+				document.getElementById('hnasat_dtrbmasuk').value = data.hna;
+				document.getElementById('hrgjual_dtrbmasuk').value = data.hrgjual_barang;
+				document.getElementById('diskon').value = diskon_default;
+			}
+
+		});  
+	})
 
 
     $(document).on('click', '#kode', function() {
@@ -1361,7 +1604,11 @@ echo"
                     "className": 'text-center',
                 },
                 {
-                    "data": "sat_barang",
+                    "data": "sat_grosir",
+                    "className": 'text-center',
+                },
+                {
+                    "data": "konversi",
                     "className": 'text-center',
                 },
                 {
@@ -1389,7 +1636,8 @@ echo"
         var kd_barang = $(this).data('kd_barang');
         var nm_barang = $(this).data('nm_barang');
         var stok_barang = $(this).data('stok_barang');
-        var sat_barang = $(this).data('sat_barang');
+        var sat_grosir = $(this).data('sat_grosir');
+        var konversi = $(this).data('konversi');
         var hna = $(this).data('hna');
         var hrgjual_dtrbmasuk = $(this).data('hrgjual_barang');
         var diskon = $(this).data('diskon');
@@ -1401,7 +1649,8 @@ echo"
         document.getElementById('nmbrg_dtrbmasuk').value = nm_barang;
         document.getElementById('stok_barang').value = stok_barang;
         document.getElementById('qty_dtrbmasuk').value = qty_default;
-        document.getElementById('sat_dtrbmasuk').value = sat_barang;
+        document.getElementById('sat_dtrbmasuk').value = sat_grosir;
+        document.getElementById('konversi').value = konversi;
         document.getElementById('hnasat_dtrbmasuk').value = hna;
         document.getElementById('hrgjual_dtrbmasuk').value = hrgjual_dtrbmasuk;
         document.getElementById('diskon').value = diskon_default;
@@ -1438,10 +1687,10 @@ echo"
         var stok_barang = document.getElementById('stok_barang').value;
         var qty_dtrbmasuk = document.getElementById('qty_dtrbmasuk').value;
         var sat_dtrbmasuk = document.getElementById('sat_dtrbmasuk').value;
+        var konversi = document.getElementById('konversi').value;
         var hnasat_dtrbmasuk = document.getElementById('hnasat_dtrbmasuk').value;
         var hrgjual_dtrbmasuk = document.getElementById('hrgjual_dtrbmasuk').value;
         var diskon = document.getElementById('diskon').value;
-
         var no_batch = document.getElementById('no_batch').value;
         var exp_date = document.getElementById('exp_date').value;
         
@@ -1449,18 +1698,15 @@ echo"
             alert('Belum ada Item terpilih');
         } else if (qty_dtrbmasuk == "") {
             alert('Qty tidak boleh kosong');
+        } else if (konversi == 0 ) {
+            alert('konversi tidak boleh kosong');
         } else if (hnasat_dtrbmasuk == "") {
             alert('Harga tidak boleh kosong');
-        } else {
+        } 
+        
+        else {
 
-            //cek stok barang apakah cukup
-            //if(stok_barang < qty_dtrbmasuk){
-            //alert('Stok barang tidak mencukupi');
-            //}else{
-            //}
-
-            $.ajax({
-
+               $.ajax({
                 type: 'post',
                 url: "modul/mod_trbmasukpbf/simpandetail_tbm.php",
                 data: {
@@ -1470,6 +1716,7 @@ echo"
                     'nmbrg_dtrbmasuk': nmbrg_dtrbmasuk,
                     'qty_dtrbmasuk': qty_dtrbmasuk,
                     'sat_dtrbmasuk': sat_dtrbmasuk,
+                    'konversi': konversi,
                     'hnasat_dtrbmasuk': hnasat_dtrbmasuk,
                     'hrgjual_dtrbmasuk': hrgjual_dtrbmasuk,
                     'diskon': diskon,
@@ -1483,10 +1730,10 @@ echo"
                     document.getElementById("nmbrg_dtrbmasuk").value = "";
                     document.getElementById("qty_dtrbmasuk").value = "";
                     document.getElementById("sat_dtrbmasuk").value = "";
+                    document.getElementById("konversi").value = "";
                     document.getElementById("hnasat_dtrbmasuk").value = "";
                     document.getElementById("hrgjual_dtrbmasuk").value = "";
                     document.getElementById("diskon").value = "";
-                    
                     document.getElementById("no_batch").value = "";
                     document.getElementById("exp_date").value = "";
                     tabel_detail();
@@ -1565,7 +1812,7 @@ echo"
                 document.getElementById('nmbrg_dtrbmasuk').value = datab.nm_barang;
                 document.getElementById('stok_barang').value = datab.stok_barang;
                 document.getElementById('qty_dtrbmasuk').value = "1";
-                document.getElementById('sat_dtrbmasuk').value = datab.sat_barang;
+                document.getElementById('sat_dtrbmasuk').value = datab.sat_grosir;
                 document.getElementById('hnasat_dtrbmasuk').value = datab.hna;
                 document.getElementById('diskon').value = datab.diskon;
             });
@@ -1600,8 +1847,6 @@ echo"
         var dp_bayar1x = dp_bayar1.replace(".", "");
         var sisa_bayar1x = sisa_bayar1.replace(".", "");
 
-        var diskon2 = document.getElementById('diskon2').value;
-        
         if (nm_supplier == "") {
             alert('Belum ada data supplier');
         } else {
@@ -1626,8 +1871,7 @@ echo"
                     'ttl_trkasir': ttl_trkasir1x,
                     'dp_bayar': dp_bayar1x,
                     'sisa_bayar': sisa_bayar1x,
-                    'carabayar': carabayar,
-                    'diskon2': diskon2
+                    'carabayar': carabayar
                 },
                 success: function(data) {
                     alert('Proses berhasil !');

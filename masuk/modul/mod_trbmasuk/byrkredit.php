@@ -23,7 +23,7 @@ switch($_GET[act]){
 			
 			<div class="box box-primary box-solid">
 				<div class="box-header with-border">
-					<h3 class="box-title">TRANSAKSI BARANG MASUK TANPA PPN</h3>
+					<h3 class="box-title">TRANSAKSI BARANG MASUK</h3>
 					<div class="box-tools pull-right">
 						<button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                     </div><!-- /.box-tools -->
@@ -46,6 +46,7 @@ switch($_GET[act]){
 								<th>No Faktur</th>
 								<th>Total Tagihan</th>
 								<th>Status Pembayaran</th>
+								<th>Jenis Distributor</th>
 								<th width="70">Aksi</th>
 							</tr>
 						</thead>
@@ -78,10 +79,11 @@ switch($_GET[act]){
 											 <td>$r[nm_supplier]</td>
 											 <td>$r[ket_trbmasuk]</td>											
 											 <td align=right>$sisa_bayar</td>											 
-											 <td align=center>$r[carabayar]</td>											 
+											 <td align=center>$r[carabayar]</td>	
+											 <td align=center>$r[jenis]</td>
 											 <td>
 											 <a href=$link title='EDIT' class='btn btn-warning btn-xs'>EDIT</a> 
-											 <a href='?module=trbmasukpbf&act=ubah&id=$r[id_trbmasuk]' title='EDIT' class='btn btn-primary btn-xs'>EDIT PBF</a>
+											 <a href='?module=trbmasukpbf&act=edit&id=$r[id_trbmasuk]' title='EDIT' class='btn btn-primary btn-xs'>EDIT PBF</a>
 											 <a href=javascript:confirmdelete('$aksi?module=trbmasuk&act=hapus&id=$r[id_trbmasuk]') title='HAPUS' class='btn btn-danger btn-xs'>HAPUS</a>
 											 
 											</td>
